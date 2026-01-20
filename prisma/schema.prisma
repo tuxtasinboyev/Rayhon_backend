@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  WAITER
+  CHEF
+  CASHIER
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum TableStatus {
+  EMPTY
+  BUSY
+  RESERVED
+}
+
+enum OrderStatus {
+  NEW
+  COOKING
+  READY
+  SERVED
+  CLOSED
+  CANCELLED
+}
+
+enum PaymentType {
+  CASH
+  CARD
+}
+
+enum ProductType {
+  SINGLE
+  SET
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  REFUNDED
+  PARTIAL
+}
+
+model Restaurant {
+  id      Int     @id @default(autoincrement())
+  name    String
+  phone   String?
+  address String?
+
+  users      User[]
+  branches   Branch[]
+  categories Category[]
+  products   Product[]
+  orders     Order[]
+
+  createdAt DateTime @default(now())
+}
+
+model Branch {
+  id      Int     @id @default(autoincrement())
+  name    String
+  address String?
+
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  users  User[]
+  tables Table[]
+  orders Order[]
+
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  fullname String
+  phone    String     @unique
+  role     UserRole
+  status   UserStatus @default(ACTIVE)
+
+  branchId Int?
+  branch   Branch? @relation(fields: [branchId], references: [id])
+
+  orders Order[] @relation("WaiterOrders")
+
+  createdAt    DateTime    @default(now())
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId Int?
+}
+
+model Table {
+  id       Int         @id @default(autoincrement())
+  number   Int
+  capacity Int
+  status   TableStatus @default(EMPTY)
+
+  branchId Int
+  branch   Branch @relation(fields: [branchId], references: [id])
+
+  orders Order[]
+
+  @@unique([branchId, number])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  products Product[]
+
+  @@unique([restaurantId, name])
+}
+
+model Product {
+  id       Int         @id @default(autoincrement())
+  name     String
+  price    Float
+  type     ProductType @default(SINGLE)
+  isActive Boolean     @default(true)
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  setItems   SetItem[]
+  orderItems OrderItem[]
+}
+
+model SetItem {
+  id       Int @id @default(autoincrement())
+  quantity Int
+
+  setId Int
+  set   Product @relation(fields: [setId], references: [id])
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  status      OrderStatus @default(NEW)
+  totalPrice  Float       @default(0)
+  guestsCount Int?
+
+  branchId Int
+  branch   Branch @relation(fields: [branchId], references: [id])
+
+  tableId Int
+  table   Table @relation(fields: [tableId], references: [id])
+
+  waiterId Int
+  waiter   User @relation("WaiterOrders", fields: [waiterId], references: [id])
+
+  items    OrderItem[]
+  payments Payment[]
+
+  openedAt DateTime  @default(now())
+  closedAt DateTime?
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId Int?
+}
+
+model OrderItem {
+  id       Int     @id @default(autoincrement())
+  quantity Int
+  price    Float
+  note     String?
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id     Int           @id @default(autoincrement())
+  amount Float
+  type   PaymentType
+  status PaymentStatus
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+}
