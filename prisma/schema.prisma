@@ -199,6 +199,7 @@ model Payment {
   type   PaymentType
   status PaymentStatus
 
+
   orderId Int
   order   Order @relation(fields: [orderId], references: [id])
 
