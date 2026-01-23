@@ -65,21 +65,23 @@ model Restaurant {
   orders     Order[]
 
   createdAt DateTime @default(now())
+  updateAt  DateTime @default(now()) @updatedAt
 }
 
 model Branch {
   id      Int     @id @default(autoincrement())
-  name    String
+  name    String  @unique
   address String?
 
   restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   users  User[]
   tables Table[]
   orders Order[]
 
   createdAt DateTime @default(now())
+  updateAt  DateTime @default(now()) @updatedAt
 }
 
 model User {
@@ -87,16 +89,19 @@ model User {
   fullname String
   phone    String     @unique
   role     UserRole
+  password String
   status   UserStatus @default(ACTIVE)
 
-  branchId Int?
-  branch   Branch? @relation(fields: [branchId], references: [id])
+  branchId Int
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   orders Order[] @relation("WaiterOrders")
 
   createdAt    DateTime    @default(now())
-  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int?
+
+  updateAt DateTime @default(now()) @updatedAt
 }
 
 model Table {
@@ -106,9 +111,11 @@ model Table {
   status   TableStatus @default(EMPTY)
 
   branchId Int
-  branch   Branch @relation(fields: [branchId], references: [id])
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
-  orders Order[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updateAt  DateTime @default(now()) @updatedAt
 
   @@unique([branchId, number])
 }
@@ -118,9 +125,11 @@ model Category {
   name String
 
   restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
-  products Product[]
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @default(now()) @updatedAt
 
   @@unique([restaurantId, name])
 }
@@ -133,13 +142,17 @@ model Product {
   isActive Boolean     @default(true)
 
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
-  setItems   SetItem[]
+  setItems   SetItem[] @relation("SetProducts")
+  asSetItems SetItem[] @relation("SetContainer")
+
   orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updateAt   DateTime    @default(now()) @updatedAt
 }
 
 model SetItem {
@@ -147,10 +160,12 @@ model SetItem {
   quantity Int
 
   setId Int
-  set   Product @relation(fields: [setId], references: [id])
+  set   Product @relation("SetContainer", fields: [setId], references: [id], onDelete: Cascade)
 
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product  @relation("SetProducts", fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updateAt  DateTime @default(now()) @updatedAt
 }
 
 model Order {
@@ -160,13 +175,13 @@ model Order {
   guestsCount Int?
 
   branchId Int
-  branch   Branch @relation(fields: [branchId], references: [id])
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   tableId Int
-  table   Table @relation(fields: [tableId], references: [id])
+  table   Table @relation(fields: [tableId], references: [id], onDelete: Cascade)
 
   waiterId Int
-  waiter   User @relation("WaiterOrders", fields: [waiterId], references: [id])
+  waiter   User @relation("WaiterOrders", fields: [waiterId], references: [id], onDelete: Cascade)
 
   items    OrderItem[]
   payments Payment[]
@@ -176,8 +191,9 @@ model Order {
 
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int?
+  updateAt     DateTime    @default(now()) @updatedAt
 }
 
 model OrderItem {
@@ -187,10 +203,12 @@ model OrderItem {
   note     String?
 
   orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updateAt  DateTime @default(now()) @updatedAt
 }
 
 model Payment {
@@ -200,7 +218,8 @@ model Payment {
   status PaymentStatus
 
   orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+  updateAt  DateTime @default(now()) @updatedAt
 }
