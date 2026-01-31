@@ -9,5 +9,4 @@ import { GuardService } from './guard.service';
   providers: [GuardService],
   exports: [GuardService],
 })
-export class GuardModule { }
-  
+export class GuardModule {}

@@ -9,7 +9,15 @@ import { ProductModule } from './product/product.module';
 import { SetItemModule } from './set-item/set-item.module';
 
 @Module({
-    imports: [AuthModule, UserModule, RestaurantModule, BranchModule, TableModule, ProductModule, SetItemModule],
-    controllers: [ProductController]
+  imports: [
+    AuthModule,
+    UserModule,
+    RestaurantModule,
+    BranchModule,
+    TableModule,
+    ProductModule,
+    SetItemModule,
+  ],
+  controllers: [ProductController],
 })
-export class ModulesModule { }
+export class ModulesModule {}
