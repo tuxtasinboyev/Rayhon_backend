@@ -3,7 +3,7 @@ import { PrismaModule } from './database/prisma.module';
 import { GuardModule } from './guard/guard.module';
 import { RoleGuardModule } from './role_guard/role_guard.module';
 import { CoreModule } from './core/core.module';
-import { ConfigModule } from './config/config.module';
+import { ConfigModules } from './config/config.module';
 import { SeaderModule } from './seeders/seader.module';
 
 @Module({
@@ -12,7 +12,7 @@ import { SeaderModule } from './seeders/seader.module';
     GuardModule,
     RoleGuardModule,
     CoreModule,
-    ConfigModule,
+    ConfigModules,
     SeaderModule,
   ],
   providers: [],
