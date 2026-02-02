@@ -7,4 +7,4 @@ import { ModulesModule } from './modules/modules.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

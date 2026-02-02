@@ -4,12 +4,23 @@ import { UserModule } from './user/user.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { BranchModule } from './branch/branch.module';
 import { TableModule } from './table/table.module';
-import { ProductController } from './product/product.controller';
 import { ProductModule } from './product/product.module';
 import { SetItemModule } from './set-item/set-item.module';
+import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-    imports: [AuthModule, UserModule, RestaurantModule, BranchModule, TableModule, ProductModule, SetItemModule],
-    controllers: [ProductController]
+  imports: [
+    AuthModule,
+    UserModule,
+    RestaurantModule,
+    BranchModule,
+    TableModule,
+    ProductModule,
+    SetItemModule,
+    ConfigModule,
+    JwtModule,
+    ProductModule
+  ],
 })
-export class ModulesModule { }
+export class ModulesModule {}
