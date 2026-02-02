@@ -82,6 +82,9 @@ model Branch {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @default(now()) @updatedAt
+
+  @@unique([restaurantId, name])
+
 }
 
 model User {
@@ -153,6 +156,8 @@ model Product {
   orderItems OrderItem[]
   createdAt  DateTime    @default(now())
   updateAt   DateTime    @default(now()) @updatedAt
+
+  @@unique([restaurantId, name])
 }
 
 model SetItem {
@@ -166,6 +171,9 @@ model SetItem {
   product   Product  @relation("SetProducts", fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updateAt  DateTime @default(now()) @updatedAt
+
+  @@unique([setId, productId])
+
 }
 
 model Order {
@@ -197,19 +205,23 @@ model Order {
 }
 
 model OrderItem {
-  id       Int     @id @default(autoincrement())
-  quantity Int
-  price    Float
-  note     String?
+  id        Int @id @default(autoincrement())
+  quantity  Int
+  price     Float
+  note      String?
 
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
+  orderId   Int
   productId Int
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
-  updateAt  DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, productId])
 }
+
 
 model Payment {
   id     Int           @id @default(autoincrement())
@@ -222,4 +234,6 @@ model Payment {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @default(now()) @updatedAt
+
+  @@unique([orderId, type])
 }
