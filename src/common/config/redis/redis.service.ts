@@ -5,11 +5,12 @@ import Redis from 'ioredis';
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private redis_client: Redis;
 
+  // {
+  // host: process.env.REDIS_HOST || 'localhost' || 'redis',
+  //   port: Number(process.env.REDIS_PORT) || 6379,
+  //   }
   async onModuleInit() {
-    this.redis_client = new Redis({
-      host: process.env.REDIS_HOST || 'localhost' || 'redis',
-      port: Number(process.env.REDIS_PORT) || 6379,
-    });
+    this.redis_client = new Redis("redis://default:MqvuOpndLKTApOHkYsIKgxAlgcwkFxWx@yamanote.proxy.rlwy.net:25736");
 
     this.redis_client.on('connect', () => {
       console.log('✅ Redis connected');
