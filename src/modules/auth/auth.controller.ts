@@ -6,21 +6,17 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
 
-    constructor(
-        private readonly authService: AuthService
-    ) { }
+  @ApiOperation({})
+  @Post('login')
+  login(@Body() payload: LoginDto) {
+    return this.authService.login(payload);
+  }
 
-    @ApiOperation({})
-    @Post('login')
-    login(@Body() payload: LoginDto) {
-        return this.authService.login(payload)
-    }
-
-
-    @ApiOperation({})
-    @Post('reset-password')
-    resetPassword(@Body() payload: ResetPasswordDto) {
-        return this.authService.resetPassword(payload)
-    }
+  @ApiOperation({})
+  @Post('reset-password')
+  resetPassword(@Body() payload: ResetPasswordDto) {
+    return this.authService.resetPassword(payload);
+  }
 }
