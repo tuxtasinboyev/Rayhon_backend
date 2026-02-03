@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseBoolPipe,
     ParseIntPipe,
     Patch,
     Post,
@@ -44,10 +45,10 @@ export class ProductController {
     @Role(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CASHIER, UserRole.WAITER, UserRole.CHEF)
     getAllProduct(
         @Query('search') search?: string,
-        @Query('categoryId', ParseIntPipe) categoryId?: number,
-        @Query('restaurantId', ParseIntPipe) restaurantId?: number,
+        @Query('categoryId',new ParseIntPipe({ optional: true })) categoryId?: number,
+        @Query('restaurantId',new ParseIntPipe({ optional: true })) restaurantId?: number,
         @Query('type') type?: ProductType,
-        @Query('isActive') isActive?: boolean,
+        @Query('isActive', new ParseBoolPipe({ optional: true })) isActive?: boolean,
     ) {
         return this.productService.getAllProduct({ search, categoryId, restaurantId, type, isActive });
     }
