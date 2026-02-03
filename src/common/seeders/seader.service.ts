@@ -30,7 +30,7 @@ export class SeederService implements OnModuleInit {
         where: { name: 'Rayhon Restaurant' },
       });
 
-      if (exBranch && existsRestauran) {
+      if (!exBranch && !existsRestauran) {
         /* =======================
                            1️⃣ RESTAURANT
                         ======================= */
@@ -42,7 +42,7 @@ export class SeederService implements OnModuleInit {
           },
         });
 
-        /* =======================
+        /* ======================= 
                            2️⃣ BRANCH
                         ======================= */
 
