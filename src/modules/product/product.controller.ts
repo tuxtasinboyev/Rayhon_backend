@@ -26,6 +26,14 @@ import { ProductService } from './product.service';
 export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
+    @ApiOperation({ summary: `Get product by ID - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}, ${UserRole.CASHIER}, ${UserRole.WAITER} , ${UserRole.CHEF}` })
+    @Get(':id')
+    @Role(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CASHIER, UserRole.WAITER, UserRole.CHEF)
+    getOneProduct(@Param('id', ParseIntPipe) id: number) {
+        return this.productService.getOneProduct(id);
+    }
+
+
     @ApiOperation({ summary: `Get all products with filters - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}, ${UserRole.CASHIER}, ${UserRole.WAITER}, ${UserRole.CHEF}` })
     @ApiQuery({ name: 'search', required: false })
     @ApiQuery({ name: 'categoryId', required: false, type: Number })
@@ -44,12 +52,6 @@ export class ProductController {
         return this.productService.getAllProduct({ search, categoryId, restaurantId, type, isActive });
     }
 
-    @ApiOperation({ summary: `Get product by ID - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}, ${UserRole.CASHIER}, ${UserRole.WAITER} , ${UserRole.CHEF}` })
-    @Get(':id')
-    @Role(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.CASHIER, UserRole.WAITER, UserRole.CHEF)
-    getOneProduct(@Param('id', ParseIntPipe) id: number) {
-        return this.productService.getOneProduct(id);
-    }
 
     @ApiOperation({ summary: `Create new product - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
     @Post()
