@@ -1,8 +1,7 @@
 import {
   ConflictException,
-  HttpException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { PrismaService } from 'src/common/database/prisma.service';
 import { CreateRestaurantDto } from './dto/create.restaurant.dto';
@@ -10,10 +9,52 @@ import { UpdateRestaurantDto } from './dto/update.restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-  async getAllRestaurants() {
+  async getAllRestaurantsActive() {
     const data = await this.prisma.restaurant.findMany({
+      where: { status: true },
+      include: {
+        users: {
+          select: {
+            id: true,
+            fullname: true,
+            branchId: true,
+            phone: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            updateAt: true,
+          },
+        },
+        branches: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            createdAt: true,
+            updateAt: true,
+          },
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        orders: true,
+        products: true,
+      },
+    });
+    return {
+      success: true,
+      data,
+    };
+  }
+
+  async getAllRestaurantsArxive() {
+    const data = await this.prisma.restaurant.findMany({
+      where: { status: false },
       include: {
         users: {
           select: {
@@ -251,13 +292,28 @@ export class RestaurantService {
     };
   }
 
+  async updateStatus(id: number) {
+    const existsRestauran = await this.prisma.restaurant.findUnique({
+      where: { id: id },
+    });
+    if (!existsRestauran) throw new NotFoundException('restaurat not found');
+
+    await this.prisma.restaurant.update({ where: { id: id }, data: { status: !existsRestauran.status } })
+
+    return {
+      success: true,
+      message: 'successfully updated'
+    }
+
+  }
+
   async deleteRestaurant(id: number) {
     const existsRestauran = await this.prisma.restaurant.findUnique({
       where: { id: id },
     });
     if (!existsRestauran) throw new NotFoundException('restaurat not found');
 
-    await this.prisma.restaurant.delete({ where: { id: id } });
+    await this.prisma.restaurant.delete({ where: { id: id, status: false } });
 
     return {
       success: true,

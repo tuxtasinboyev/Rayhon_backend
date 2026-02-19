@@ -11,12 +11,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
+import { Role } from 'src/common/decorators/role.decorator';
+import { GuardService } from 'src/common/guard/guard.service';
+import { RoleGuardService } from 'src/common/role_guard/role_guard.service';
 import { BranchService } from './branch.service';
 import { CreateBranch } from './dto/create.branch.dto';
 import { UpdateBranch } from './dto/update.branch.dto';
-import { GuardService } from 'src/common/guard/guard.service';
-import { RoleGuardService } from 'src/common/role_guard/role_guard.service';
-import { Role } from 'src/common/decorators/role.decorator';
 
 @ApiTags('Branches')
 @Controller('branches')
@@ -25,12 +25,20 @@ import { Role } from 'src/common/decorators/role.decorator';
 export class BranchController {
     constructor(private readonly branchService: BranchService) { }
 
-    @ApiOperation({ summary: `Get all branches - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
+    @ApiOperation({ summary: `Get all branches active- ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
     @Get()
     @Role(UserRole.SUPERADMIN, UserRole.ADMIN)
-    getAllBranches() {
-        return this.branchService.getAllBranches();
+    getAllBranchesActive() {
+        return this.branchService.getAllBranchesActive();
     }
+
+    @ApiOperation({ summary: `Get all branches arxive - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
+    @Get()
+    @Role(UserRole.SUPERADMIN, UserRole.ADMIN)
+    getAllBranchesArxive() {
+        return this.branchService.getAllBranchesArxive();
+    }
+
 
     @ApiOperation({ summary: `Get branch by ID - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
     @Get(':id')
@@ -61,6 +69,15 @@ export class BranchController {
         @Body() dto: UpdateBranch,
     ) {
         return this.branchService.updateBranch(id, dto);
+    }
+
+    @ApiOperation({ summary: `Update branch status toggle - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
+    @Patch('toggle/:id')
+    @Role(UserRole.SUPERADMIN, UserRole.ADMIN)
+    updateBranchStatus(
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.branchService.updateBranchStatus(id,);
     }
 
     @ApiOperation({ summary: `Delete branch - ${UserRole.SUPERADMIN}` })

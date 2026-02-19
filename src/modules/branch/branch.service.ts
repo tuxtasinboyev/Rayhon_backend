@@ -7,8 +7,9 @@ import { UpdateBranch } from './dto/update.branch.dto';
 export class BranchService {
     constructor(private prisma: PrismaService) { }
 
-    async getAllBranches() {
+    async getAllBranchesActive() {
         return this.prisma.branch.findMany({
+            where: { status: true },
             include: {
                 orders: true,
                 restaurant: true,
@@ -27,6 +28,29 @@ export class BranchService {
             }
         })
     }
+
+    async getAllBranchesArxive() {
+        return this.prisma.branch.findMany({
+            where: { status: false },
+            include: {
+                orders: true,
+                restaurant: true,
+                users: {
+                    select: {
+                        id: true,
+                        fullname: true,
+                        phone: true,
+                        role: true,
+                        status: true,
+                        createdAt: true,
+                        updateAt: true
+                    }
+                },
+                tables: true
+            }
+        })
+    }
+
 
     async getOneBranchBy(id: number) {
         const existsBranch = await this.prisma.branch.findUnique({ where: { id: id } })
@@ -156,6 +180,17 @@ export class BranchService {
             data
         }
 
+    }
+    
+    async updateBranchStatus(id: number) {
+        const existsBranch = await this.prisma.branch.findUnique({ where: { id: id } })
+        if (!existsBranch) throw new NotFoundException('branch not found')
+
+        await this.prisma.branch.update({ where: { id: id }, data: { status: !existsBranch.status } })
+        return {
+            success: true,
+            message: 'successfully updated'
+        }
     }
 
     async deleteBranch(id: number) {

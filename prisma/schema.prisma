@@ -57,6 +57,7 @@ model Restaurant {
   name    String  @unique
   phone   String?
   address String?
+  status  Boolean @default(true)
 
   users      User[]
   branches   Branch[]
@@ -72,6 +73,7 @@ model Branch {
   id      Int     @id @default(autoincrement())
   name    String  @unique
   address String?
+  status  Boolean @default(true)
 
   restaurantId Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -84,7 +86,6 @@ model Branch {
   updateAt  DateTime @default(now()) @updatedAt
 
   @@unique([restaurantId, name])
-
 }
 
 model User {
@@ -124,8 +125,9 @@ model Table {
 }
 
 model Category {
-  id   Int    @id @default(autoincrement())
-  name String
+  id     Int     @id @default(autoincrement())
+  name   String
+  status Boolean @default(true)
 
   restaurantId Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -143,6 +145,7 @@ model Product {
   price    Float
   type     ProductType @default(SINGLE)
   isActive Boolean     @default(true)
+  status   Boolean     @default(true)
 
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -161,8 +164,9 @@ model Product {
 }
 
 model SetItem {
-  id       Int @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   quantity Int
+  status   Boolean @default(true)
 
   setId Int
   set   Product @relation("SetContainer", fields: [setId], references: [id], onDelete: Cascade)
@@ -173,7 +177,6 @@ model SetItem {
   updateAt  DateTime @default(now()) @updatedAt
 
   @@unique([setId, productId])
-
 }
 
 model Order {
@@ -205,16 +208,17 @@ model Order {
 }
 
 model OrderItem {
-  id        Int @id @default(autoincrement())
-  quantity  Int
-  price     Float
-  note      String?
+  id       Int     @id @default(autoincrement())
+  quantity Int
+  price    Float
+  note     String?
+  status Boolean @default(true)
 
   orderId   Int
   productId Int
 
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -222,13 +226,12 @@ model OrderItem {
   @@unique([orderId, productId])
 }
 
-
 model Payment {
   id     Int           @id @default(autoincrement())
   amount Float
   type   PaymentType
   status PaymentStatus
-
+ 
   orderId Int
   order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 

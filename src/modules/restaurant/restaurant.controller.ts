@@ -25,12 +25,20 @@ import { Role } from 'src/common/decorators/role.decorator';
 export class RestaurantController {
     constructor(private readonly restaurantService: RestaurantService) { }
 
-    @ApiOperation({ summary: `Get all restaurants - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
+    @ApiOperation({ summary: `Get all restaurants active- ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
     @UseGuards(GuardService, RoleGuardService)
-    @Get()
+    @Get('active')
     @Role(UserRole.SUPERADMIN, UserRole.ADMIN)
     getAllRestaurants() {
-        return this.restaurantService.getAllRestaurants();
+        return this.restaurantService.getAllRestaurantsActive();
+    }
+
+    @ApiOperation({ summary: `Get all restaurants arxive- ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
+    @UseGuards(GuardService, RoleGuardService)
+    @Get('arxive')
+    @Role(UserRole.SUPERADMIN, UserRole.ADMIN)
+    getAllRestaurantsArxive() {
+        return this.restaurantService.getAllRestaurantsArxive();
     }
 
     @ApiOperation({ summary: `Get restaurant by ID - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
@@ -68,7 +76,17 @@ export class RestaurantController {
         return this.restaurantService.updateRestaurant(id, dto);
     }
 
-    @ApiOperation({ summary: `Delete restaurant - ${UserRole.SUPERADMIN}` })
+    @ApiOperation({ summary: `Update restaurant status - ${UserRole.SUPERADMIN}, ${UserRole.ADMIN}` })
+    @UseGuards(GuardService, RoleGuardService)
+    @Patch('toggle-status/:id')
+    @Role(UserRole.SUPERADMIN, UserRole.ADMIN)
+    updateRestaurantStutus(
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.restaurantService.updateStatus(id);
+    }
+
+    @ApiOperation({ summary: `Delete restaurant only status false- ${UserRole.SUPERADMIN}` })
     @UseGuards(GuardService, RoleGuardService)
     @Delete(':id')
     @Role(UserRole.SUPERADMIN)
