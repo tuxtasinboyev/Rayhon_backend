@@ -127,7 +127,7 @@ model Table {
 model Category {
   id     Int     @id @default(autoincrement())
   name   String
-  status Boolean @default(true)
+  status Boolean? @default(true)
 
   restaurantId Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -145,7 +145,7 @@ model Product {
   price    Float
   type     ProductType @default(SINGLE)
   isActive Boolean     @default(true)
-  status   Boolean     @default(true)
+  status   Boolean?     @default(true)
 
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -166,7 +166,7 @@ model Product {
 model SetItem {
   id       Int     @id @default(autoincrement())
   quantity Int
-  status   Boolean @default(true)
+  status   Boolean? @default(true)
 
   setId Int
   set   Product @relation("SetContainer", fields: [setId], references: [id], onDelete: Cascade)
