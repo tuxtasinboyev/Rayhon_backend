@@ -142,7 +142,7 @@ export class UserService {
 
         const existsReastarant = await this.prisma.restaurant.findUnique({ where: { id: payload.restaurantId } })
         if (!existsReastarant) throw new NotFoundException('restarunt not found')
-            
+
         const branch = await this.prisma.branch.findUnique({
             where: { id: payload.branchId },
         });
